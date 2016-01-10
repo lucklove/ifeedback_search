@@ -1,10 +1,11 @@
 SET(TEST_SOURCES
 	test.cc
     cppjieba.cc
+    search.cc
 )
 
 INCLUDE_DIRECTORIES(
-    ${CMAKE_SOURCE_DIR}/inc
+    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/3rdparty/inc
 )
 

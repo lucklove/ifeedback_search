@@ -7,7 +7,7 @@ ADD_COMPILE_OPTIONS("-std=c++1y")
 ADD_COMPILE_OPTIONS("-Wall")
 
 SUBDIRS(
-#    src
+    src
     test
 )
 
