@@ -18,8 +18,11 @@ public:
         static const cppjieba::Jieba jieba("dict/jieba.dict.utf8", "dict/hmm_model.utf8", "");
         jieba.CutForSearch(s, words);
 
+        double sum_score = 0.0;                     /**< 用于之后的规一化 */
         for(const std::string& key : words)
         {
+            sum_score += weight_storage_.get(key);
+
             std::vector<int> matched_problems = problem_storage_.getIds(key);
             for(int id : matched_problems)
                 unordered_problems[id] = 0;
@@ -32,7 +35,7 @@ public:
             std::string s = problem_storage_.getContent(p.first);
             std::vector<std::string> doc_words;
             jieba.CutForSearch(s, doc_words);
-            p.second = match(doc_words.begin(), doc_words.begin(), doc_words.end(), words.begin(), words.end());
+            p.second = match(doc_words.begin(), doc_words.begin(), doc_words.end(), words.begin(), words.end()) / sum_score;
         }
         std::sort(result_problems.begin(), result_problems.end(), [](const auto& l, const auto& r)
         {
