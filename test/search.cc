@@ -1,6 +1,5 @@
 #include "UnitTest.hh"
 #include "search/Searcher.hh"
-#include "storage/Storage.hh"
 
 TEST_CASE(search)
 {

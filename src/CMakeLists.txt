@@ -9,4 +9,4 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES(/usr/local/lib64)
 ADD_EXECUTABLE(ifeedback_search ${IFEEDBACK_SEARCH_SRCS})
-TARGET_LINK_LIBRARIES(ifeedback_search boost_system pthread soci_core soci_mysql)
+TARGET_LINK_LIBRARIES(ifeedback_search boost_system pthread soci_core soci_mysql atomic)

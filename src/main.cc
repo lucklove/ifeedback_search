@@ -2,11 +2,13 @@
 #include "search/Searcher.hh"
 #include "storage/ProblemDB.hh"
 #include "storage/WeightDB.hh"
+#include "storage/DBConnectionPool.hh"
 
 int main()
 {
-    ProblemDB pdb;
-    WeightDB wdb;
+    DBConnectionPool connections{std::thread::hardware_concurrency(), "db=db_ifeedback_search user=root pass=lucklove"};
+    ProblemDB pdb{connections};
+    WeightDB wdb{connections};
 
     crow::SimpleApp app;
 
