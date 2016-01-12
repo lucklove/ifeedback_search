@@ -87,6 +87,7 @@ public:
         while(true)
         {
             TaggedStateReference old_tagged_top = top_;
+
             if(old_tagged_top.node == nullptr)
             {
                 if(strong)
@@ -96,6 +97,7 @@ public:
                 }
                 return std::unique_ptr<Node, ConnectionDeleter>(nullptr, ConnectionDeleter{this});
             }
+
             TaggedStateReference new_tagged_top = {old_tagged_top.node->next, old_tagged_top.version + 1};
             if(top_.compare_exchange_weak(old_tagged_top, new_tagged_top))
                 return std::unique_ptr<Node, ConnectionDeleter>(old_tagged_top.node, ConnectionDeleter{this});
