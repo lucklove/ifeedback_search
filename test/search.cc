@@ -103,7 +103,4 @@ TEST_CASE(search)
     TEST_CHECK(result_set[1].first == 2, "expect 2, got:", result_set[1].first);
     TEST_CHECK(result_set[2].first == 3, "expect 3, got:", result_set[2].first);
     TEST_CHECK(result_set[3].first == 1, "expect 1, got:", result_set[3].first);
-
-    for(auto& p : result_set)
-        std::cout << p.first << ":" << p.second << std::endl;
 }

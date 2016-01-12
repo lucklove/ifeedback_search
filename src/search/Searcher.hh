@@ -11,18 +11,15 @@ public:
     {
     }
 
-    auto search(const std::string& s)
+    auto search(const std::string& s) const
     {
         std::vector<std::string> words;
         std::unordered_map<int, double> unordered_problems;
-        jieba_.CutForSearch(s, words);
+        static const cppjieba::Jieba jieba("dict/jieba.dict.utf8", "dict/hmm_model.utf8", "");
+        jieba.CutForSearch(s, words);
 
         for(const std::string& key : words)
         {
-            double weight = weight_storage_.get(key);
-            if(weight < 0.8)      /**< 忽略权重太小的词 */
-                continue;
-
             std::vector<int> matched_problems = problem_storage_.getIds(key);
             for(int id : matched_problems)
                 unordered_problems[id] = 0;
@@ -34,7 +31,7 @@ public:
         {
             std::string s = problem_storage_.getContent(p.first);
             std::vector<std::string> doc_words;
-            jieba_.CutForSearch(s, doc_words);
+            jieba.CutForSearch(s, doc_words);
             p.second = match(doc_words.begin(), doc_words.begin(), doc_words.end(), words.begin(), words.end());
         }
         std::sort(result_problems.begin(), result_problems.end(), [](const auto& l, const auto& r)
@@ -51,7 +48,7 @@ private:
         IteratorT doc_middle, 
         IteratorT doc_end,
         IteratorT words_begin, 
-        IteratorT words_end)
+        IteratorT words_end) const
     {
         if(words_begin == words_end)
             return 0;
@@ -80,11 +77,7 @@ private:
 
     ProblemStorageT& problem_storage_;
     WeightStorageT& weight_storage_;
-    static cppjieba::Jieba jieba_;
 };
-
-template <typename ProblemStorageT, typename WeightStorageT>
-cppjieba::Jieba Searcher<ProblemStorageT, WeightStorageT>::jieba_("dict/jieba.dict.utf8", "dict/hmm_model.utf8", "");
 
 template <typename ProblemStorageT, typename WeightStorageT>
 auto make_searcher(ProblemStorageT& ps, WeightStorageT& ws)
