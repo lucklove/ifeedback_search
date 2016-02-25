@@ -11,7 +11,7 @@ public:
     {
     }
 
-    auto search(const std::string& s) const
+    auto search(const std::string& s, int subject_id = 0, int type_id = 0) const
     {
         std::vector<std::string> words;
         std::unordered_map<int, double> unordered_problems;
@@ -21,9 +21,9 @@ public:
         double sum_score = 0.0;                     /**< 用于之后的规一化 */
         for(const std::string& key : words)
         {
-            sum_score += weight_storage_.get(key);
+            sum_score += weight_storage_.get(key, subject_id, type_id);
 
-            std::vector<int> matched_problems = problem_storage_.getIds(key);
+            std::vector<int> matched_problems = problem_storage_.getIds(key, subject_id, type_id);
             for(int id : matched_problems)
                 unordered_problems[id] = 0;
         }
@@ -35,7 +35,7 @@ public:
             std::string s = problem_storage_.getContent(p.first);
             std::vector<std::string> doc_words;
             jieba.CutForSearch(s, doc_words);
-            p.second = match(doc_words.begin(), doc_words.begin(), doc_words.end(), words.begin(), words.end()) / sum_score;
+            p.second = match(doc_words.begin(), doc_words.begin(), doc_words.end(), words.begin(), words.end(), subject_id, type_id) / sum_score;
         }
         std::sort(result_problems.begin(), result_problems.end(), [](const auto& l, const auto& r)
         {
@@ -51,7 +51,9 @@ private:
         IteratorT doc_middle, 
         IteratorT doc_end,
         IteratorT words_begin, 
-        IteratorT words_end) const
+        IteratorT words_end,
+        int subject_id,
+        int type_id) const
     {
         if(words_begin == words_end)
             return 0;
@@ -64,17 +66,18 @@ private:
 
             if(dest == doc_middle)
             {
-                return match(doc_begin, doc_middle, doc_end, ++words_begin, words_end);
+                return match(doc_begin, doc_middle, doc_end, ++words_begin, words_end, subject_id, type_id);
             }
             else 
             {
-                return 0.5 * weight_storage_.get(*words_begin)                  /**< 0.5为关键词乱序的惩罚 */
-                    + match(doc_begin, ++dest, doc_end, ++words_begin, words_end);
+                return 0.5 * weight_storage_.get(*words_begin, subject_id, type_id)     /**< 0.5为关键词乱序的惩罚 */
+                    + match(doc_begin, ++dest, doc_end, ++words_begin, words_end, subject_id, type_id);
             }
         }
         else
         {
-            return weight_storage_.get(*words_begin) + match(doc_begin, ++dest, doc_end, ++words_begin, words_end);
+            return weight_storage_.get(*words_begin, subject_id, type_id) 
+                + match(doc_begin, ++dest, doc_end, ++words_begin, words_end, subject_id, type_id);
         }
     }
 

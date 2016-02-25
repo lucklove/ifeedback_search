@@ -25,7 +25,7 @@ TEST_CASE(search)
             return m[id];
         }
 
-        std::vector<int> getIds(const std::string& key)
+        std::vector<int> getIds(const std::string& key, int = 0, int = 0)
         {
             std::unordered_map<std::string, std::vector<int>> m =
             {
@@ -52,7 +52,7 @@ TEST_CASE(search)
 
     struct MockWeightStorage
     {
-        double get(const std::string& key)
+        double get(const std::string& key, int = 0, int = 0)
         {
             std::unordered_map<std::string, double> m =
             {
