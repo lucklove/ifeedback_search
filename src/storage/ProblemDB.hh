@@ -11,36 +11,27 @@ private:
 public:
     ProblemDB(DBConnectionPool& pool) : connection_pool_{pool} {}
 
-    std::vector<int> getIds(const std::string& key, int subject_id = 0, int type_id = 0) const
+    std::unordered_map<int, std::pair<std::string, double>> get(const std::vector<std::string>& keys, int subject_id = 0, int type_id = 0) const
     {
         auto connection = connection_pool_.get(true);
-        if(subject_id && type_id)
+        std::unordered_map<int, std::pair<std::string, double>> problems;
+        std::stringstream ss;
+        ss << "select id, content from tb_question where ";
+        for(const std::string& key : keys)
+            ss << "content like '%" << key << "%' or ";
+        ss << "false";
+        if(subject_id)
+            ss << " and subject=" << subject_id;
+        if(type_id)
+            ss << " and type=" << type_id;
+        soci::rowset<> rows = (connection->session.prepare << ss.str());
+        for(const auto& row : rows)
         {
-            soci::rowset<int> ids = (connection->session.prepare << 
-                "select id from tb_question_keyword where keyword=:KEY and subject=:SUB and type=:TYPE", 
-                soci::use(key), soci::use(subject_id), soci::use(type_id));
-            return std::vector<int>(ids.begin(), ids.end());
+            assert(row.get<int>(0) > 0);
+            problems[row.get<int>(0)] = {row.get<std::string>(1), 0};
         }
-        else if(subject_id)
-        {
-            soci::rowset<int> ids = (connection->session.prepare << 
-                "select id from tb_question_keyword where keyword=:KEY and subject=:SUB", 
-                soci::use(key), soci::use(subject_id));
-            return std::vector<int>(ids.begin(), ids.end());
-        }
-        else if(type_id)
-        {
-            soci::rowset<int> ids = (connection->session.prepare << 
-                "select id from tb_question_keyword where keyword=:KEY and type=:TYPE", 
-                soci::use(key), soci::use(type_id));
-            return std::vector<int>(ids.begin(), ids.end());
-        }
-        else
-        {
-            soci::rowset<int> ids = (connection->session.prepare << 
-                "select id from tb_question_keyword where keyword=:KEY", soci::use(key));
-            return std::vector<int>(ids.begin(), ids.end());
-        }
+
+        return problems;
     }
 
     std::string getContent(int id) const

@@ -5,8 +5,9 @@ SET(IFEEDBACK_SEARCH_SRCS
 INCLUDE_DIRECTORIES(
     ${CMAKE_SOURCE_DIR}/3rdparty/inc
     /usr/include/mysql
+    /usr/include/soci
 )
 
 LINK_DIRECTORIES(/usr/local/lib64)
 ADD_EXECUTABLE(ifeedback_search ${IFEEDBACK_SEARCH_SRCS})
-TARGET_LINK_LIBRARIES(ifeedback_search boost_system pthread soci_core soci_mysql atomic)
+TARGET_LINK_LIBRARIES(ifeedback_search boost_system pthread soci_core soci_mysql atomic redox ev hiredis)

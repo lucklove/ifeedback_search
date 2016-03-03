@@ -8,7 +8,6 @@ ADD_COMPILE_OPTIONS("-Wall")
 
 SUBDIRS(
     src
-    test
 )
 
 ADD_CUSTOM_TARGET(debug

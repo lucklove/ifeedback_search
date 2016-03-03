@@ -1,0 +1,8 @@
+[package]
+name = "frequency_calculator"
+version = "0.1.0"
+authors = ["Jos <gnu.crazier@gmail.com>"]
+
+[dependencies]
+redis = "0.5.2"
+mysql = "2.*.*"
